@@ -101,7 +101,8 @@ def get_reranker():
 
 def get_gemini_llm(model_name: str | None = None, *, eval_mode: bool = False):
     """Create a Gemini chat model. Requires GOOGLE_API_KEY or GEMINI_API_KEY."""
-    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    # api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+    api_key = ""
     if not api_key:
         logger.warning("GOOGLE_API_KEY not set — Gemini is unavailable.")
         return None
@@ -110,7 +111,7 @@ def get_gemini_llm(model_name: str | None = None, *, eval_mode: bool = False):
     logger.info("Loading Gemini LLM (%s) …", chosen)
     return ChatGoogleGenerativeAI(
         model=chosen, google_api_key=api_key, temperature=0,
-        max_output_tokens=1024 if eval_mode else 512,
+        max_output_tokens=4096 if eval_mode else 4096,
     )
 
 
@@ -137,7 +138,7 @@ def get_llm() -> Optional[object]:
         _llm = ChatGroq(
             model=GROQ_DEFAULT_MODEL,
             temperature=0,
-            max_tokens=256,
+            max_tokens=4096,
             api_key=api_key
         )
         logger.info("LLM ready.")
@@ -171,7 +172,7 @@ def get_eval_llm() -> Optional[object]:
     return ChatGroq(
         model=GROQ_DEFAULT_MODEL,
         temperature=0,
-        max_tokens=1024,
+        max_tokens=4096,
         rate_limiter=rate_limiter,
     )
 

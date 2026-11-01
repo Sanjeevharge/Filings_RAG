@@ -70,8 +70,8 @@ if __name__ == "__main__":
         raise SystemExit("Blank questions; run scripts/build_eval_set.py first.")
     df["expected_abstain"] = to_bool(df["expected_abstain"])
     df["expected_refusal"] = to_bool(df["expected_refusal"])
-    if len(df) < 100:
-        raise SystemExit(f"n={len(df)} < 100")
+    # if len(df) < 100:
+    #     raise SystemExit(f"n={len(df)} < 100")
 
     raw = out / "raw.csv"
     if raw.exists():

@@ -141,6 +141,16 @@ def _build_context(
     return "\n\n---\n\n".join(blocks), sources
 
 
+def _to_text(resp) -> str:
+    c = getattr(resp, "content", resp)
+    if isinstance(c, str):
+        return c
+    if isinstance(c, list):
+        return "".join(b if isinstance(b, str) else (b.get("text", "") if isinstance(b, dict) and b.get("type") == "text" else "")
+                       for b in c)
+    return str(c)
+
+
 def _extract_ids_from_text(text: str, valid_ids: set[str]) -> list[str]:
     """
     Fallback: extract [doc_id] citations directly from answer text.
@@ -171,6 +181,7 @@ def generate_answer(
     max_chars:      int  = 1_500,
     multiquery:     bool = False,
     model_name:     str  = "unknown",
+    structured:     bool = True,
 ) -> GenerationResult:
     """
     Synthesise a grounded answer from retrieved documents.
@@ -220,6 +231,8 @@ def generate_answer(
 
     # ── Attempt 1: structured output (answer + cited_ids) ─────────────────
     try:
+        if not structured:
+            raise RuntimeError("structured output disabled")
         chain  = prompt | llm.with_structured_output(_StructuredAnswer)
         result = chain.invoke({"context": context, "query": query})
 
@@ -248,15 +261,16 @@ def generate_answer(
         )
 
     except Exception as exc:
-        logger.warning(
-            "Structured output failed (%s) — falling back to plain text.", exc
-        )
+        if structured:
+            logger.warning(
+                "Structured output failed (%s) — falling back to plain text.", exc
+            )
 
     # ── Attempt 2: plain-text fallback ────────────────────────────────────
     try:
         chain    = prompt | llm
         response = chain.invoke({"context": context, "query": query})
-        answer   = response.content
+        answer   = _to_text(response)
 
         cited_set     = set(_extract_ids_from_text(answer, valid_ids))
         cited_sources = (
