@@ -101,8 +101,7 @@ def get_reranker():
 
 def get_gemini_llm(model_name: str | None = None, *, eval_mode: bool = False):
     """Create a Gemini chat model. Requires GOOGLE_API_KEY or GEMINI_API_KEY."""
-    # api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
-    api_key = "AQ.Ab8RN6JpOVCB7bRP9ZKANOYNarcz9cft2bVspzREnfYC1ty_Rg"
+    api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
     if not api_key:
         logger.warning("GOOGLE_API_KEY not set — Gemini is unavailable.")
         return None
@@ -124,7 +123,7 @@ def get_llm() -> Optional[object]:
     """
     global _llm
     if _llm is None:
-        api_key = "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"
+        api_key = ""
         if not api_key:
             logger.warning(
                 "GROQ_API_KEY not set — MultiQuery expansion disabled. "
