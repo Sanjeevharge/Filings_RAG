@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+httpx
+datasets
+pymupdf
+scikit-learn
+pandas
+numpy
+tabulate
+tqdm
